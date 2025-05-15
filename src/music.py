@@ -10,7 +10,7 @@ ydl_opts = {
     "format": "bestaudio",
     "noplaylist": True,
     "quiet": True,
-    "default_search": "scsearch"
+    "default_search": "scsearch",
 }
 
 
