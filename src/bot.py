@@ -8,7 +8,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 
 from music import play_music, play_music_in_channel
-from src.api import run_api
+from api import run_api
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_BOT_TOKEN")
