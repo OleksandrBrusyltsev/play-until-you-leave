@@ -119,19 +119,19 @@ async def leave(ctx: commands.Context) -> None:
     else:
         await ctx.send("Not in a voice channel")
 
-@bot.event
-async def on_voice_state_update(member, before, after):
-    if member.id == bot.user.id and before.channel and not after.channel:
-        guild = before.channel.guild
-        channel = bot.get_channel(CHANNEL_ID)
-        if not discord.utils.get(bot.voice_clients, guild=guild):
-            logger.warning("Bot was disconnected, auto-rejoining...")
-            try:
-                await asyncio.sleep(1)
-                await join_and_play(channel)
-                logger.info("Music auto-restarted.")
-            except Exception as e:
-                logger.error(f"Auto-rejoin failed: {e}")
+# @bot.event
+# async def on_voice_state_update(member, before, after):
+#     if member.id == bot.user.id and before.channel and not after.channel:
+#         guild = before.channel.guild
+#         channel = bot.get_channel(CHANNEL_ID)
+#         if not discord.utils.get(bot.voice_clients, guild=guild):
+#             logger.warning("Bot was disconnected, auto-rejoining...")
+#             try:
+#                 await asyncio.sleep(1)
+#                 await join_and_play(channel)
+#                 logger.info("Music auto-restarted.")
+#             except Exception as e:
+#                 logger.error(f"Auto-rejoin failed: {e}")
 
 
 
