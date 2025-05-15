@@ -1,11 +1,14 @@
 import asyncio
 import logging
 import os
+import threading
 
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
+
 from music import play_music, play_music_in_channel
+from src.api import run_api
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_BOT_TOKEN")
@@ -100,4 +103,7 @@ async def leave(ctx: commands.Context) -> None:
 
 
 if __name__ == "__main__":
+    threading.Thread(
+        target=run_api, daemon=True
+    ).start()  # uvicorn needs its own event loop
     bot.run(TOKEN)

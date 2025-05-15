@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "new"
+version = "0.1.0"
+description = ""
+authors = ["Oleksandr Brusyltsev <brusiltsev1@gmail.com>"]
+readme = "README.md"
+package-mode = false
+
+[tool.black]
+line-length = 88
+target-version = [ "py310", "py311" ]
+exclude = "((.eggs | .git | .pytest_cache | build | dist | .env) | alembic)"
+
+
+[tool.ruff]
+line-length = 88
+exclude = [".git", "__pycache__", ".mypy_cache", ".pytest_cache"]
+select = [
+    "E",
+    "W",
+    "F",
+    # "I",  # isort
+    "C",
+    "B",
+]
+ignore = [
+    "B904",
+    "B006",
+    "E501",
+    "B008",
+    "C901",
+]
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
