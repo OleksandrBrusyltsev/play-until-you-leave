@@ -6,6 +6,7 @@ import threading
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
+from tenacity import retry, stop_after_attempt, wait_fixed
 
 from api import run_api
 from music import play_music, play_music_in_channel
@@ -45,11 +46,20 @@ async def join_and_play(
         await voice_client.disconnect()
     voice_client = await channel.connect()
     try:
-        await play_music_in_channel(voice_client, query)
+        await play_music_with_retry(voice_client, query)
         logger.info(f"Playing music in {channel.name}")
     except Exception as e:
-        logger.error(f"Playback error: {e}")
+        logger.error(f"Playback failed after retries: {e}")
         await voice_client.disconnect()
+
+
+@retry(
+    stop=stop_after_attempt(3),
+    wait=wait_fixed(5),
+    reraise=True,
+)
+async def play_music_with_retry(voice_client, query: str):
+    await play_music_in_channel(voice_client, query)
 
 
 async def music_presence_checker() -> None:
