@@ -10,20 +10,20 @@ ydl_opts = {
     "format": "bestaudio",
     "noplaylist": True,
     "quiet": True,
-    "default_search": "ytsearch",
+    "default_search": "scsearch"
 }
 
 
-def search_yt(query: str) -> str | None:
+def search_sc(query: str) -> str | None:
     with YoutubeDL(ydl_opts) as ydl:
         try:
             info = ydl.extract_info(query, download=False)
             if "entries" in info:
                 info = info["entries"][0]
-            logger.info(f"Found track URL for query: {query}")
+            logger.info(f"Found SC track URL for query: {query}")
             return info["url"]
         except Exception as e:
-            logger.error(f"Search error: {e}")
+            logger.error(f"SoundCloud search error: {e}")
             return None
 
 
@@ -32,7 +32,7 @@ async def play_music(ctx: commands.Context, query: str) -> None:
         await ctx.send("Join a voice channel first!")
         return
 
-    if not (url := search_yt(query)):
+    if not (url := search_sc(query)):
         await ctx.send("Failed to find audio stream")
         return
 
@@ -56,13 +56,13 @@ async def play_music(ctx: commands.Context, query: str) -> None:
             else logger.error(f"Playback error: {e}"),
         )
         await ctx.send("Playback started!")
-        logger.info(f"Playing track for {ctx.author} in {ctx.guild.name}")
+        logger.info(f"Playing SC track for {ctx.author} in {ctx.guild.name}")
     except Exception as e:
         logger.error(f"Playback error: {e}")
 
 
 async def play_music_in_channel(voice_client: discord.VoiceClient, query: str) -> None:
-    if not (url := search_yt(query)):
+    if not (url := search_sc(query)):
         logger.error("Failed to find audio stream")
         return
 
@@ -81,6 +81,6 @@ async def play_music_in_channel(voice_client: discord.VoiceClient, query: str) -
             if not e
             else logger.error(f"Playback error: {e}"),
         )
-        logger.info(f"Playing track in {voice_client.channel.name}")
+        logger.info(f"Playing SC track in {voice_client.channel.name}")
     except Exception as e:
         logger.error(f"Playback error: {e}")

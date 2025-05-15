@@ -7,8 +7,8 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 
-from music import play_music, play_music_in_channel
 from api import run_api
+from music import play_music, play_music_in_channel
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_BOT_TOKEN")
@@ -86,9 +86,9 @@ async def play(ctx: commands.Context, *, query: str = DEFAULT_TRACK) -> None:
         return
     try:
         await play_music(ctx, query)
-        logger.info(f"Play command executed by {ctx.author}")
+        logger.info(f"Play SC command executed by {ctx.author}")
     except Exception as e:
-        logger.error(f"Play command error: {e}")
+        logger.error(f"Play SC command error: {e}")
         await ctx.send(f"Playback error: {e}")
 
 
