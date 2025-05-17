@@ -34,18 +34,15 @@ async def any_voice_users(guild: discord.Guild) -> bool:
         not member.bot for channel in guild.voice_channels for member in channel.members
     )
 
-async def join_and_play(
-    channel: discord.VoiceChannel, query: str = DEFAULT_TRACK
-) -> None:
-    logger.debug(f"Trying to join and play in {channel} with query '{query}'")
-    if (
-        voice_client := discord.utils.get(bot.voice_clients, guild=channel.guild)
-    ) and voice_client.channel == channel:
-        logger.debug("Already connected to the target voice channel.")
+async def join_and_play(channel: discord.VoiceChannel, query: str = DEFAULT_TRACK) -> None:
+    voice_client = discord.utils.get(bot.voice_clients, guild=channel.guild)
+    if voice_client and voice_client.channel == channel and voice_client.is_connected():
+        logger.debug("Already connected to the voice channel.")
         return
     if voice_client:
         logger.debug("Disconnecting from previous voice channel.")
         await voice_client.disconnect()
+        await asyncio.sleep(2)
     voice_client = await channel.connect()
     try:
         await play_music_with_retry(voice_client, query)
@@ -53,6 +50,7 @@ async def join_and_play(
     except Exception as e:
         logger.error(f"Playback failed after retries: {e}")
         await voice_client.disconnect()
+
 
 @retry(
     stop=stop_after_attempt(3),
