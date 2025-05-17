@@ -74,10 +74,9 @@ async def music_presence_checker() -> None:
     await bot.wait_until_ready()
     guild = bot.get_guild(GUILD_ID)
     channel = bot.get_channel(CHANNEL_ID)
-    logger.debug(f"Startup checker: GUILD_ID={GUILD_ID}, CHANNEL_ID={CHANNEL_ID}, guild={guild}, channel={channel}")
+    logger.debug(f"Startup checker:{GUILD_ID=}, {CHANNEL_ID=}, {guild=},{channel=}")
     if not guild or not channel:
-        logger.error(f"Guild or channel not found: GUILD_ID={GUILD_ID}, CHANNEL_ID={CHANNEL_ID}")
-        return
+        logger.error(f"Guild or channel not found: {GUILD_ID=}, {CHANNEL_ID=}")
 
     while not bot.is_closed():
         logger.debug(f"Current voice_clients: {bot.voice_clients}")
