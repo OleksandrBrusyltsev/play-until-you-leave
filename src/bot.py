@@ -18,23 +18,29 @@ CHANNEL_ID = int(os.getenv("CHANNEL_ID"))
 DEFAULT_TRACK = "top playlist"
 
 logging.basicConfig(
-    level=logging.DEBUG,
-    format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
 intents = discord.Intents.default()
 intents.message_content = True
 intents.voice_states = True
+intents.members = True
 
 bot = commands.Bot(command_prefix="!", intents=intents)
 
+
 async def any_voice_users(guild: discord.Guild) -> bool:
+    for channel in guild.voice_channels:
+        logger.debug(f"Check channel: {channel.name}, members: {channel.members}")
     return any(
         not member.bot for channel in guild.voice_channels for member in channel.members
     )
 
-async def join_and_play(channel: discord.VoiceChannel, query: str = DEFAULT_TRACK) -> None:
+
+async def join_and_play(
+    channel: discord.VoiceChannel, query: str = DEFAULT_TRACK
+) -> None:
     voice_client = discord.utils.get(bot.voice_clients, guild=channel.guild)
     if voice_client and voice_client.channel == channel and voice_client.is_connected():
         logger.debug("Already connected to the voice channel.")
@@ -68,6 +74,7 @@ async def play_music_with_retry(voice_client, query: str):
         voice_client = await voice_client.channel.connect()
     await play_music_in_channel(voice_client, query)
 
+
 async def music_presence_checker() -> None:
     await bot.wait_until_ready()
     guild = bot.get_guild(GUILD_ID)
@@ -92,10 +99,12 @@ async def music_presence_checker() -> None:
             logger.exception(f"Unhandled occupancy error: {e}")
         await asyncio.sleep(30)
 
+
 @bot.event
 async def on_ready() -> None:
     logger.info(f"Bot {bot.user.name} started")
     bot.loop.create_task(music_presence_checker())
+
 
 @bot.command()
 async def play(ctx: commands.Context, *, query: str = DEFAULT_TRACK) -> None:
@@ -109,6 +118,7 @@ async def play(ctx: commands.Context, *, query: str = DEFAULT_TRACK) -> None:
         logger.error(f"Play SC command error: {e}")
         await ctx.send(f"Playback error: {e}")
 
+
 @bot.command()
 async def leave(ctx: commands.Context) -> None:
     if voice_client := discord.utils.get(bot.voice_clients, guild=ctx.guild):
@@ -117,6 +127,7 @@ async def leave(ctx: commands.Context) -> None:
         logger.info(f"Left voice channel in {ctx.guild.name}")
     else:
         await ctx.send("Not in a voice channel")
+
 
 if __name__ == "__main__":
     threading.Thread(
